@@ -68,7 +68,7 @@ function on_publish_post($new_status, $old_status, $post) {
       if ($original) {
         publish($post, $original);
       }
-      
+
     }
   }
 }
@@ -76,7 +76,7 @@ function on_publish_post($new_status, $old_status, $post) {
 function create() {
   $id = intval($_REQUEST['post']);
 
-  // make sure the clicked link is a valid nonce. Make sure the user can revisionize. 
+  // make sure the clicked link is a valid nonce. Make sure the user can revisionize.
   if (user_can_revisionize() && check_admin_referer('revisionize-create-'.$id)) {
     if ($id) {
       $post = get_post($id);
@@ -90,14 +90,14 @@ function create() {
   }
 
   // if we didn't redirect out, then we fail.
-  wp_die(__('Invalid Post ID', REVISIONIZE_I18N_DOMAIN)); 
+  wp_die(__('Invalid Post ID', REVISIONIZE_I18N_DOMAIN));
 }
 
 function create_revision($post, $is_original=false) {
   $new_id = copy_post($post, null, $post->ID);
-  update_post_meta($new_id, '_post_revision_of', $post->ID);      // mark the new post as a variation of the old post. 
+  update_post_meta($new_id, '_post_revision_of', $post->ID);      // mark the new post as a variation of the old post.
   update_post_meta($new_id, '_post_revision', true);
-  
+
   if ($is_original) {
     update_post_meta($post->ID, '_post_original', true);
     delete_post_meta($new_id, '_post_original');                    // a revision is never an original
@@ -110,7 +110,7 @@ function create_revision($post, $is_original=false) {
 
 function publish($post, $original) {
   if (user_can_publish_revision() || is_cron()) {
-    $clone_id = create_revision($original);    // keep a backup copy of the live post.
+//    $clone_id = create_revision($original);    // keep a backup copy of the live post.
 
     delete_post_meta($post->ID, '_post_revision_of');                       // remove the variation tag so the meta isn't copied
     copy_post($post, $original, $original->post_parent);                    // copy the variation into the live post
@@ -175,14 +175,14 @@ function copy_post($post, $to=null, $parent_id=null, $status='draft') {
     $data['ID'] = $to->ID;
     $new_id = $to->ID;
     wp_update_post($data);
-    clear_post_meta($new_id);  
+    clear_post_meta($new_id);
   } else {
     $new_id = wp_insert_post($data);
   }
 
   copy_post_taxonomies($new_id, $post);
   copy_post_meta_info($new_id, $post);
-  
+
   return $new_id;
 }
 
