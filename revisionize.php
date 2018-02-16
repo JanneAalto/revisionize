@@ -2,8 +2,8 @@
 /*
  Plugin Name: Revisionize
  Plugin URI: https://github.com/jamiechong/revisionize
- Description: Stage revisions or variations of live, published content. Publish the staged content manually or with the built-in scheduling system. 
- Version: 1.0.1
+ Description: Stage revisions or variations of live, published content. Publish the staged content manually or with the built-in scheduling system.
+ Version: 1.0.1.1
  Author: Jamie Chong
  Author URI: http://jamiechong.ca
  Text Domain: revisionize
@@ -192,8 +192,10 @@ function copy_post_taxonomies($new_id, $post) {
         wp_set_object_terms($new_id, null, 'category');
 
         $taxonomies = get_object_taxonomies($post->post_type);
+        $disabled_taxonomies = apply_filters('revisionize/disabled_taxonomies', []);
 
         foreach ($taxonomies as $taxonomy) {
+        if ( in_array($taxonomy, $disabled_taxonomies) ) continue;
             $post_terms = wp_get_object_terms($post->ID, $taxonomy, ['orderby' => 'term_order']);
             $terms = [];
 
